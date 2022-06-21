@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const UserModel= require("../models/blogsModel")
+=======
+const UserModel= require("../models/AuthorModel")
+>>>>>>> e896a891e965a39c7f54b4d392495f10de6b49a9
 
 const createUser= async function (req, res) {
     let data= req.body
