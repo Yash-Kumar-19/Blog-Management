@@ -15,7 +15,7 @@ const blogsModel=new mongoose.Schema(
         type:ObjectId,
         ref:"Author"
     },
-    tags: [Array], 
+    tags: [String], 
     category: {
         type:String,
         required:true
@@ -27,10 +27,16 @@ const blogsModel=new mongoose.Schema(
         type: Boolean,
         default: false
     },
+    publishedAt:{
+        type:Date
+    },
     isDeleted: {
         type:Boolean,
         default: false
     },
+    deletedAt : {
+        type : Date
+    }
 },{ timestamps: true });
 
 

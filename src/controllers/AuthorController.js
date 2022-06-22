@@ -60,7 +60,7 @@ const authors = async function (req, res) {
    catch(err){
     res.status(500).send({
         status : false,
-        msg : "Server Error"
+        msg : err.message
     })
    }
 }
