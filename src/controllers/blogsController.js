@@ -88,5 +88,49 @@ catch(err){
   })
   }
 }
+
+const deleteBlogs = async function(req , res){
+  try{
+      let requestBlogId = req.params.blogId
+      
+      if(!requestBlogId){
+          return res.status(400).send({
+              status : false,
+              msg : "BlogId is required"
+          })
+      }
+       if (!requestBlogId.match(/^[0-9a-f]{24}$/)){
+          return res.status(400).send({
+              status : false,
+              msg : "Not a valid ObjectId"
+          })
+       }
+      let deleteId = await blogsModel.findById(requestBlogId)
+      if(!deleteId || (deleteId.isDeleted == true)){
+          return res.status(404).send({
+              status : false,
+              msg : "Request Id not Found"
+          })         
+      }
+      let deleteBlog = await blogsModel.findOneAndUpdate(
+          {_id : requestBlogId},
+          {isDeleted : true, deletedAt : Date.now()},
+          {new : true, upsert : true}
+      )
+      res.status(200).send({
+          status : true,
+          data : deleteBlog
+      })
+  }
+  catch(err){
+     res.status(500).send({
+      status : false,
+      msg : err.message
+     })
+  }
+}
+
+
 module.exports.createBlog=createBlog 
 module.exports.displayBlog=displayBlog 
+module.exports.deleteBlogs = deleteBlogs
