@@ -8,23 +8,25 @@ const authors = async function (req, res) {
     try{
         let data = req.body //Accessing Data from from postman body
       
-    
-        if(!data.fname || (typeof(data.fname) != "string")){
+        // Validation For First Name
+        if(!data.fname || (typeof(data.fname) != "string" || !data.fname.match(/^[A-Za-z]$/))){
             return res.status(400).send({
                 status : false,
-                msg : "First Name is Missing or type is invalid"
+                msg : "First Name is Missing or should contain only alphabets"
             })
         }
-        if(!data.lname || (typeof(data.lname) != "string")){
+        //Validation For Last Name
+        if(!data.lname || (typeof(data.lname) != "string"|| !data.lname.match(/^[A-Za-z]$/))){
             return res.status(400).send({
                 status : false,
-                msg : "Last Name is Missing"
+                msg : "Last Name is Missing or should contain only alphabets"
             })
         }
+        //Validation for title
         if(!data.title || (typeof(data.title) != "string")){
             return res.status(400).send({
                 status : false,
-                msg : "Title is Missing"
+                msg : "Title is Missing or does not have a valid input"
             })
         }
         else{
@@ -35,26 +37,34 @@ const authors = async function (req, res) {
             })
          }
         }
+        //Validation For Password
        if(!data.password || (typeof(data.password) != "string")){
         return res.status(400).send({
             status : false,
-            msg : "Password is Missing"
+            msg : "Password is Missing or does not have a valid input "
         })
        }
+       //Validation For Email
        if(!data.email || (typeof(data.email) != "string")){
         return res.status(400).send({
             status : false,
-            msg : "Email is Missing"
+            msg : "Email is Missing or has invalid input"
         })
        } 
-       else{
-          if(! validator.validate(data.email)){
+        if(! validator.validate(data.email)){
             return res.status(400).send({
                 status : false,
                 msg : "Email-Id is invalid"
             })
           }
-       }
+          let checkEmail = await AuthorModel.findOne({email : data.email})
+          if(checkEmail){
+               return res.status(400).send({
+                   status :false,
+                   msg : "Email Id already Registred"
+               })
+          }
+       //Creating Autor Only if above validation are passed    
       let savedData = await AuthorModel.create(data)
       res.status(201).send({
         status : true,

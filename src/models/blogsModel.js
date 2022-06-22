@@ -13,7 +13,8 @@ const blogsModel=new mongoose.Schema(
     },
     authorId:{
         type:ObjectId,
-        ref:"Author"
+        ref:"Author",
+        req : true
     },
     tags: [String], 
     category: {
