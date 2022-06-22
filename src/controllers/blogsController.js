@@ -1,6 +1,7 @@
 const blogsModel= require("../models/blogsModel")
 const AuthorModel=require("../models/AuthorModel")
 
+//--------------------Handler For Creating Blogs--------------------------//
 const createBlog= async function (req, res) {
     try{
     let blog = req.body
@@ -50,7 +51,7 @@ const createBlog= async function (req, res) {
 }
 
 
-
+//---------------------Handler For Displaying Blogs----------------------//
 const displayBlog = async function (req, res){
 try{
     let filterCondition = req.query
@@ -89,7 +90,7 @@ catch(err){
   }
 }
 
-
+//-----------------------Handler For Updating Blogs------------------------//
 const updateBlog = async function(req, res){
    
   try{
@@ -171,6 +172,7 @@ const updateBlog = async function(req, res){
 
 }
 
+//---------------------------Handler For Deleting Blogs By BlogId-----------------------------//
 const deleteBlogs = async function(req , res){
   try{
       let requestBlogId = req.params.blogId
@@ -212,8 +214,44 @@ const deleteBlogs = async function(req , res){
   }
 }
 
+//------------------Handler for Deleting Blogs by Query------------------------//
+const deleteByQuery = async function (req, res) {
 
+    try {
+  
+      let data = req.query; 
+  
+        const deleteByQuery = await blogsModel.updateMany(
+  
+        { $and: [data, { isDeleted: false }] },
+  
+        { $set: { isDeleted: true ,deletedAt:new Date()} },
+  
+        { new: true })
+  
+        if (deleteByQuery.modifiedCount==0) 
+        return res.status(400).send(
+          { status: false,
+             msg: "The Blog is already Deleted"
+           })
+  
+        res.status(200).send({ status: true, msg: deleteByQuery })
+    }
+  
+    catch (err) {
+        res.status(500).send({
+          status:false,
+          error: err.message 
+        })}
+  }
+
+
+
+
+
+//For Exporting The Modules
 module.exports.createBlog=createBlog 
 module.exports.displayBlog=displayBlog 
 module.exports.updateBlog = updateBlog
 module.exports.deleteBlogs = deleteBlogs
+module.exports.deleteByQuery=deleteByQuery

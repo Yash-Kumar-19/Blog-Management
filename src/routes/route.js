@@ -24,6 +24,9 @@ router.put("/blogs/:blogId", BlogController.updateBlog)
 //---------Delete Blogs Using Blog Id----------//
 router.delete("/blogs/:blogId", BlogController.deleteBlogs) 
 
+//================Delete by Query========================//
+router.delete("/blogs",BlogController.deleteByQuery)
+
 
 
 module.exports = router;
