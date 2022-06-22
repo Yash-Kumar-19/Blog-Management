@@ -18,6 +18,9 @@ router.post("/blogs",BlogController.createBlog )
 //-----------Display Blogs API---------//
 router.get("/blogs",BlogController.displayBlog )
 
+//-----------Update Blog API----------//
+router.put("/blogs/:blogId", BlogController.updateBlog) 
+
 //---------Delete Blogs Using Blog Id----------//
 router.delete("/blogs/:blogId", BlogController.deleteBlogs) 
 
