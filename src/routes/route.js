@@ -8,10 +8,10 @@ const BlogController=require("../controllers/blogsController")
 router.get("/test-me", function (req, res) {
     res.send("My first ever api!")
 })
+
+
 //-----------Create Authors APi----------//
 router.post("/authors", AuthorController.authors)
-
-
 //------------Create blogs APIS---------//
 router.post("/blogs",BlogController.createBlog )
 
@@ -24,8 +24,11 @@ router.put("/blogs/:blogId", BlogController.updateBlog)
 //---------Delete Blogs Using Blog Id----------//
 router.delete("/blogs/:blogId", BlogController.deleteBlogs) 
 
-//================Delete by Query========================//
+//====================Delete by Query====================//
 router.delete("/blogs",BlogController.deleteByQuery)
+
+//=====================LOGIN USER========================//
+router.post("/login",AuthorController.loginUser)
 
 
 

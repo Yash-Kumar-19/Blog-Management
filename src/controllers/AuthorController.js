@@ -1,5 +1,7 @@
 const AuthorModel= require("../models/AuthorModel")
 const validator = require("email-validator")
+const jwt = require('jsonwebtoken');
+
 
 
 
@@ -79,7 +81,35 @@ const authors = async function (req, res) {
        }
     }
 
+    const loginUser = async function (req, res) {
+        let userName = req.body.email;
+        let password = req.body.password;
+        if(!userName || !password){
+            return res.status(400).send({
+                status:false,
+                msg:"please enter username or password"
+            })
+        }
+        let author = await AuthorModel.findOne({ email: userName, password: password });
+        if (!author)
+          return res.status(401).send({
+            status: false,
+            msg: "invalid usename or password",
+          })
+        let token = jwt.sign(
+          {
+            authorId: author._id.toString(), 
+          },
+          "project-1"
+        )
+        res.setHeader("x-auth-token", token);
+        res.status(200).send({
+             status: true,
+             token: token 
+            })
+        };
 
 
 //For Exporting The Modules
 module.exports.authors = authors
+module.exports.loginUser=loginUser
