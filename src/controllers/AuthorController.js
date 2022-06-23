@@ -11,14 +11,14 @@ const authors = async function (req, res) {
         let data = req.body //Accessing Data from from postman body
       
         // Validation For First Name
-        if(!data.fname || (typeof(data.fname) != "string" || !data.fname.match(/^[A-Za-z]$/))){
+        if(!data.fname || (typeof(data.fname) != "string" || !data.fname.match(/^[A-Za-z]+$/))){
             return res.status(400).send({
                 status : false,
                 msg : "First Name is Missing or should contain only alphabets"
             })
         }
         //Validation For Last Name
-        if(!data.lname || (typeof(data.lname) != "string"|| !data.lname.match(/^[A-Za-z]$/))){
+        if(!data.lname || (typeof(data.lname) != "string"|| !data.lname.match(/^[A-Za-z]+$/))){
             return res.status(400).send({
                 status : false,
                 msg : "Last Name is Missing or should contain only alphabets"
@@ -102,7 +102,7 @@ const authors = async function (req, res) {
           },
           "project-1"
         )
-        res.setHeader("x-auth-token", token);
+        res.setHeader("x-api-key", token);
         res.status(200).send({
              status: true,
              token: token 
