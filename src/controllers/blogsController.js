@@ -96,19 +96,20 @@ const updateBlog = async function(req, res){
    
   try{
       let requestBlogId = req.params.blogId
-      let newTags = req.body.tags
-      let newTitle = req.body.title
-      let newBody= req.body.body
-      let newSubCategory = req.body.subcategory
-      let published = req.body.isPublished
-     
-      
-      if(!requestBlogId){
-          return res.status(400).send({
-              status : false,
-              msg : "BlogId is required"
-          })
+      let updateRequest = req.body
+      if(Object.keys(updateRequest).length == 0){
+        return res.status(400).send({
+            status: false,
+            msg : "Mentiom the fields to be updated"
+        })
       }
+      let newTags = updateRequest.tags
+      let newTitle = updateRequest.title
+      let newBody= updateRequest.body
+      let newSubCategory = updateRequest.subcategory
+      let published = updateRequest.isPublished
+     
+    
        if (!requestBlogId.match(/^[0-9a-f]{24}$/)){
           return res.status(400).send({
               status : false,
@@ -126,7 +127,7 @@ const updateBlog = async function(req, res){
      if(newTags){
      let updatedTags = updateId.tags
       updatedTags.push(newTags)
-    updatedBlog = await blogsModel.findOneAndUpdate(
+      updatedBlog = await blogsModel.findOneAndUpdate(
           {_id : requestBlogId}, 
           {tags : updatedTags},
           {new : true} )
@@ -148,7 +149,7 @@ const updateBlog = async function(req, res){
           updatedSubCategory.push(newSubCategory)
           updatedBlog = await blogsModel.findOneAndUpdate(
               {_id : requestBlogId}, 
-              {subcategory : newSubCategory},
+              {subcategory : updatedSubCategory},
               {new : true} )
       }
       if(published){
@@ -156,7 +157,7 @@ const updateBlog = async function(req, res){
           updatedBlog = await blogsModel.findOneAndUpdate(
               {_id : requestBlogId}, 
               {isPublished : true, publishedAt : Date.now()},
-              {new : true})
+              {new : true, upsert : true})
       }
 
      res.status(200).send({
@@ -170,7 +171,6 @@ const updateBlog = async function(req, res){
    msg : err.message
   })
 }
-
 }
 
 //---------------------------Handler For Deleting Blogs By BlogId-----------------------------//
@@ -178,13 +178,7 @@ const deleteBlogs = async function(req , res){
   try{
       let requestBlogId = req.params.blogId
       
-      if(!requestBlogId){
-          return res.status(400).send({
-              status : false,
-              msg : "BlogId is required"
-          })
-      }
-       if (!requestBlogId.match(/^[0-9a-f]{24}$/)){
+         if (!requestBlogId.match(/^[0-9a-f]{24}$/)){
           return res.status(400).send({
               status : false,
               msg : "Not a valid ObjectId"
@@ -197,7 +191,7 @@ const deleteBlogs = async function(req , res){
               msg : "Request Id not Found"
           })         
       }
-      let deleteBlog = await blogsModel.findOneAndUpdate(
+       await blogsModel.findOneAndUpdate(
           {_id : requestBlogId},
           {isDeleted : true, deletedAt : Date.now()},
           {new : true, upsert : true}
