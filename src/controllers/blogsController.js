@@ -198,9 +198,7 @@ const deleteBlogs = async function(req , res){
           {isDeleted : true, deletedAt : Date.now()},
           {new : true, upsert : true}
       )
-      res.status(200).send({
-          status : true    
-      })
+      res.status(204).send()
   }
   catch(err){
      res.status(500).send({
@@ -245,7 +243,7 @@ const deleteByQuery = async function (req, res) {
              msg: "No Blog Found"
            })
   
-        res.status(200).send({ status: true})
+        res.status(200).send()
     }
   
     catch (err) {

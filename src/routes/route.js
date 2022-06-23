@@ -21,10 +21,10 @@ router.post("/blogs",MidController.jwtValidation ,BlogController.createBlog )
 router.get("/blogs",MidController.jwtValidation,BlogController.displayBlog )
 
 //-----------Update Blog API----------//
-router.put("/blogs/:blogId", BlogController.updateBlog) 
+router.put("/blogs/:blogId", MidController.jwtValidation, MidController.authoriseByPath, BlogController.updateBlog) 
 
 //---------Delete Blogs Using Blog Id----------//
-router.delete("/blogs/:blogId", BlogController.deleteBlogs) 
+router.delete("/blogs/:blogId",MidController.jwtValidation, MidController.authoriseByPath, BlogController.deleteBlogs) 
 
 //====================Delete by Query====================//
 router.delete("/blogs",BlogController.deleteByQuery)

@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-
+const blogsModel= require("../models/blogsModel")
 
 const jwtValidation = function(req, res, next){
 try {  
@@ -27,4 +27,32 @@ catch (err){
 }
 }
 
+
+const authoriseByPath = async function(req, res, next) {
+    try{
+      let authorLoggedIn = req.token.authorId
+      let blogId = req.params.blogId
+      let authorAccessing = await blogsModel.findById(blogId)
+      if(!authorAccessing) {
+          return res.status(404).send({
+            status: false, 
+            message: "Blog not Found"})
+      }
+      if(authorAccessing.authorId != authorLoggedIn) {
+        return res.status(403).send({
+            status: false, 
+            msg: 'Author not authorised'
+        })
+      }
+    
+        next()
+      }
+      catch (err){
+        console.log("this error is from authorisation ", err.message)
+        res.status(500).send({msg : err.message})  
+      }  
+      }
+
+
 module.exports.jwtValidation = jwtValidation
+module.exports.authoriseByPath =authoriseByPath
