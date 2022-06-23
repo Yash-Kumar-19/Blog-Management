@@ -27,7 +27,7 @@ router.put("/blogs/:blogId", MidController.jwtValidation, MidController.authoris
 router.delete("/blogs/:blogId",MidController.jwtValidation, MidController.authoriseByPath, BlogController.deleteBlogs) 
 
 //====================Delete by Query====================//
-router.delete("/blogs",BlogController.deleteByQuery)
+router.delete("/blogs",MidController.jwtValidation, MidController.authoriseByQuery, BlogController.deleteByQuery)
 
 //=====================LOGIN USER========================//
 router.post("/login",AuthorController.loginUser)

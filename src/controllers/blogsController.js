@@ -212,26 +212,11 @@ const deleteBlogs = async function(req , res){
 const deleteByQuery = async function (req, res) {
 
     try {
-  
-      let data = req.query; 
-      if(Object.keys(data).length== 0){
-        return res.status(400).send({
-          status : false,
-          msg : "Provide information for deletion"
-        })
-      }
-      if(data.authorId){
-        if (!data.authorId.match(/^[0-9a-f]{24}$/)){
-          return res.status(400).send({
-              status : false,
-              msg : "Not a valid ObjectId"
-          })
-       }
-      }
-  
+
+      let data = req.query
         const deleteByQuery = await blogsModel.updateMany(
   
-        { $and: [data, { isDeleted: false }] },
+        { $and: [data ,{authorId : req.id}, { isDeleted: false }] },
   
         { $set: { isDeleted: true ,deletedAt:new Date()} },
   
@@ -243,7 +228,7 @@ const deleteByQuery = async function (req, res) {
              msg: "No Blog Found"
            })
   
-        res.status(200).send()
+        res.status(204).send()
     }
   
     catch (err) {
