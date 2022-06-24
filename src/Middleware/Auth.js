@@ -106,7 +106,6 @@ const authoriseByQuery = async function (req, res, next) {
         }
         req.id = authorLoggedIn
         next()
-
     }
     catch (err) {
         console.log("this error is from authorisation ", err.message)
