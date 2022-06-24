@@ -40,7 +40,7 @@ const authors = async function (req, res) {
          }
         }
         //Validation For Password
-       if(!data.password || (typeof(data.password) != "string")){
+       if((!data.password) || (typeof(data.password) != "string")|| (data.password.trim().length == 0)){
         return res.status(400).send({
             status : false,
             msg : "Password is Missing or does not have a valid input "
@@ -59,6 +59,7 @@ const authors = async function (req, res) {
                 msg : "Email-Id is invalid"
             })
           }
+          //Checks For Unique Email Id
           let checkEmail = await AuthorModel.findOne({email : data.email})
           if(checkEmail){
                return res.status(400).send({
@@ -80,7 +81,7 @@ const authors = async function (req, res) {
         })
        }
     }
-
+//-----------------------API for Login User---------------------------//
     const loginUser = async function (req, res) {
         let userName = req.body.email;
         let password = req.body.password;
@@ -96,6 +97,7 @@ const authors = async function (req, res) {
             status: false,
             msg: "invalid usename or password",
           })
+          //Token Validation
         let token = jwt.sign(
           {
             authorId: author._id.toString(), 
