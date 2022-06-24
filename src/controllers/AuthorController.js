@@ -40,10 +40,16 @@ const authors = async function (req, res) {
          }
         }
         //Validation For Password
+        if(!data.password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/)){
+            return res.status(400).send({
+                status:false,
+                msg:"Password must be 8-16 character"
+            })
+        }
        if((!data.password) || (typeof(data.password) != "string")|| (data.password.trim().length == 0)){
         return res.status(400).send({
             status : false,
-            msg : "Password is Missing or does not have a valid input "
+            msg : "password must be at least 8 characters long contain a number and an uppercase letter "
         })
        }
        //Validation For Email
