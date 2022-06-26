@@ -47,24 +47,28 @@ const createBlog= async function (req, res) {
         return arr.length == f_arr.length
     }
     //validation for tags 
-    if(isValid(blog.tags) == false){
+    if(blog.tags) {
+        if(isValid(blog.tags) == false){
         return res.status(400).send({
             status : false,
             msg : "Invalid input for tags"
         })
+        }
     }
     //validation for sub-category
-    if(isValid(blog.subcategory) == false){
+    if(blog.subcategory){
+        if(isValid(blog.subcategory) == false){
         return res.status(400).send({
             status : false,
             msg : "Invalid input for subcategory"
         })
+        }
     }
     // Validation for Category
     if(!blog.category || (typeof(blog.category) != "string") || (blog.category.trim().length == 0)){
         return res.status(400).send({
         status:false,
-        msg:"Cateegory is missing or has invalid entry"
+        msg:"Category is missing or has invalid entry"
     })};
 
     
