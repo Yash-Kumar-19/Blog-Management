@@ -7,6 +7,8 @@ const BlogController=require("../controllers/blogsController")
 
 const MidController = require("../Middleware/Auth")
 
+
+//----------Test Api---------------//
 router.get("/test-me", function (req, res) {
     res.send("My first ever api!")
 })
@@ -14,8 +16,9 @@ router.get("/test-me", function (req, res) {
 
 //-----------Create Authors APi----------//
 router.post("/authors", AuthorController.authors)
+
 //------------Create blogs APIS---------//
-router.post("/blogs",MidController.jwtValidation ,BlogController.createBlog )
+router.post("/blogs",MidController.jwtValidation ,MidController.authoriseCreate,BlogController.createBlog )
 
 //-----------Display Blogs API---------//
 router.get("/blogs",MidController.jwtValidation,BlogController.displayBlog )
@@ -30,7 +33,7 @@ router.delete("/blogs/:blogId",MidController.jwtValidation, MidController.author
 router.delete("/blogs",MidController.jwtValidation, MidController.authoriseByQuery, BlogController.deleteByQuery)
 
 //=====================LOGIN USER========================//
-router.post("/login",AuthorController.loginUser)
+router.post("/login",AuthorController.login)
 
 
 
