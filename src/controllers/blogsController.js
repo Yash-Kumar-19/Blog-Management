@@ -68,9 +68,12 @@ const createBlog= async function (req, res) {
         status:false,
         msg:"Category is missing or has invalid entry"
     })};
+
     //If isPublished is true we add publishedAt
-    if(blog.isPublished == "true"){
-        blog.publishedAt = Date.now()
+    
+    if(blog.isPublished == true){
+        
+        blog.publishedAt= Date.now()
     }
 
     let blogCreated = await blogsModel.create(blog)
