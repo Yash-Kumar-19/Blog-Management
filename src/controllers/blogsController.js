@@ -71,7 +71,7 @@ const createBlog= async function (req, res) {
 
     //If isPublished is true we add publishedAt
     
-    if(blog.isPublished == true){
+    if(blog.isPublished == true || blog.isPublished == "true"){
         
         blog.publishedAt= Date.now()
     }
