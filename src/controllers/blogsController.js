@@ -5,20 +5,16 @@ const AuthorModel=require("../models/AuthorModel")
 const createBlog= async function (req, res) {
     try{
     let blog = req.body
+
+     //To check if any information is coming or not in request body
+    if(Object.keys(blog).length == 0){
+        return res.status(400).send({
+         status: false,
+         msg : "Please provide the input"
+        })
+     }
+
     let author_Id=blog.authorId
-    //checks if author id is coming in request or not
-    if(!author_Id){
-        return res.send({
-            status:false,
-            msg:"Author ID required"
-        })}
-        //Object Id validation for authorId
-        if (!author_Id.match(/^[0-9a-f]{24}$/)){
-          return res.status(400).send({
-              status : false,
-              msg : "Not a valid ObjectId"
-          })
-       }
 
     let author=await AuthorModel.findById(author_Id)
     //Checks if any document is present in database with specified author Id
@@ -46,6 +42,7 @@ const createBlog= async function (req, res) {
         let f_arr = arr.filter((contents) => typeof(contents)== "string" && contents.trim().length!=0)
         return arr.length == f_arr.length
     }
+    
     //validation for tags 
     if(blog.tags) {
         if(isValid(blog.tags) == false){
@@ -55,6 +52,7 @@ const createBlog= async function (req, res) {
         })
         }
     }
+
     //validation for sub-category
     if(blog.subcategory){
         if(isValid(blog.subcategory) == false){
@@ -70,8 +68,11 @@ const createBlog= async function (req, res) {
         status:false,
         msg:"Category is missing or has invalid entry"
     })};
+    //If isPublished is true we add publishedAt
+    if(blog.isPublished == "true"){
+        blog.publishedAt = Date.now()
+    }
 
-    
     let blogCreated = await blogsModel.create(blog)
     res.status(201).send({
         status : true,
@@ -104,6 +105,14 @@ try{
       })
    }
   }
+  //To handle if multiple data in tags
+ if (filterCondition.tags) {   
+    filterCondition.tags = { $in: filterCondition.tags.split(",").map(tag => tag.trim()) };  
+}
+//To handle if multiple data in SubCategory
+if (filterCondition.subcategory) {
+    filterCondition.subcategory = { $in: filterCondition.subcategory.split(",").map(sub => sub.trim()) };
+}
   //Displaying Data which matches filter condition and is published and not deleted
   let displayingData = await blogsModel.find({$and :[filterCondition, {isDeleted : false}, {isPublished : true},]})
   
@@ -135,6 +144,17 @@ const updateBlog = async function(req, res){
   try{
       let requestBlogId = req.params.blogId
       let updateRequest = req.body
+    
+     
+     let updateId = await blogsModel.findById(requestBlogId)
+      if(!updateId || (updateId.isDeleted == true)){
+          return res.status(404).send({
+              status : false,
+              msg : "Request Id not Found"
+          })         
+      }
+    
+    
       //Checks if any condition is coming in request for updation
       if(Object.keys(updateRequest).length == 0){
         return res.status(400).send({
@@ -147,22 +167,16 @@ const updateBlog = async function(req, res){
       let newBody= updateRequest.body
       let newSubCategory = updateRequest.subcategory
       let published = updateRequest.isPublished
-     
-   
-     let updateId = await blogsModel.findById(requestBlogId)
-     if(!updateId || (updateId.isDeleted == true)){
-         return res.status(404).send({
-             status : false,
-             msg : "Request Id not Found"
-         })         
-     }
+    
 
      let updatedBlog 
 
     
      if((newTags) && (typeof(newTags)== "string") && (newTags.trim().length != 0)){
      let updatedTags = updateId.tags
-      updatedTags.push(newTags)
+     newTags = newTags.split(",").map(tag => tag.trim()) //To handle multiple tag condition
+     for(let tag of newTags)
+      {updatedTags.push(tag)}
       updatedTags = [...new Set(updatedTags)] //Removes Duplicate Tags
       updatedBlog = await blogsModel.findOneAndUpdate(
           {_id : requestBlogId}, 
@@ -186,7 +200,9 @@ const updateBlog = async function(req, res){
 
       if(newSubCategory && (typeof(newSubCategory)== "string") && (newSubCategory.trim().length != 0)){
           let updatedSubCategory = updateId.subcategory
-          updatedSubCategory.push(newSubCategory)
+          newSubCategory = newSubCategory.split(',').map(sub => sub.trim()) //To handle multiple subcategory
+          for(let sub of newSubCategory)
+          {updatedSubCategory.push(sub)}
           updatedSubCategory = [...new Set(updatedSubCategory)] //Removes Duplicate SubCategories
           updatedBlog = await blogsModel.findOneAndUpdate(
               {_id : requestBlogId}, 
@@ -195,17 +211,23 @@ const updateBlog = async function(req, res){
       }
 
       if(published == true && updateId.isPublished == false){ 
-          if(published == true)
           updatedBlog = await blogsModel.findOneAndUpdate(
               {_id : requestBlogId}, 
               {isPublished : true, publishedAt : Date.now()},
               {new : true, upsert : true})
       }
+
+      if(published == false && updateId.isPublished == true){ 
+        updatedBlog = await blogsModel.findOneAndUpdate(
+            {_id : requestBlogId}, 
+            {isPublished : false, publishedAt : ""},
+            {new : true, upsert : true})
+    }
       
     if(!updatedBlog){
         return res.status(400).send({
             status : false,
-            msg :" No data updated due to invalid request or data is already published"
+            msg :" No data updated due to invalid request"
         })
     }
      res.status(200).send({
@@ -242,7 +264,9 @@ const deleteBlogs = async function(req , res){
           {isDeleted : true, deletedAt : Date.now()},
           {new : true, upsert : true}
       )
-      res.status(200).send()
+      res.status(200).send({
+        status : true
+      })
   }
   catch(err){
     console.log("Error is from delete blogs by blogId", err.message)
@@ -272,8 +296,11 @@ const deleteByQuery = async function (req, res) {
           { status: false,
              msg: "No Blog Found"
            })
-  
-        res.status(200).send()
+        let count = deleteByQuery.modifiedCount
+        res.status(200).send({
+            status : true,
+            msg : "No of blogs deleted:", count
+        })
     }
   
     catch (err) {

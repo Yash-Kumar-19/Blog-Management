@@ -34,7 +34,16 @@ const authoriseCreate = async function (req, res, next) {
     try {
         
         let authorLoggedIn = req.token.authorId   //Accessing authorId from attribute
-        let authorAccessing = req.body.authorId  //AuthorId coming in request body
+        let authorAccessing = req.body.authorId //AuthorId coming in request body
+     
+        //checks if author id is coming in request or not
+    if(!authorAccessing){
+        return res.send({
+            status:false,
+            msg:"Author ID required"
+        })}
+
+
         if (!authorAccessing.match(/^[0-9a-f]{24}$/)) {
             return res.status(400).send({
                 status: false,

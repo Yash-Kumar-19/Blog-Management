@@ -10,6 +10,12 @@ const authors = async function (req, res) {
     try {
         let data = req.body //Accessing Data from from postman body
 
+        if(Object.keys(data).length == 0){
+           return res.status(400).send({
+            status: false,
+            msg : "Please provide the input"
+           })
+        }
         // Validation For First Name
         if (!data.fname || (typeof (data.fname) != "string" || !data.fname.match(/^[A-Za-z]+$/))) {
             return res.status(400).send({
@@ -40,8 +46,8 @@ const authors = async function (req, res) {
             }
         }
         //Validation For Password
-        if (!data.password || (typeof (data.password) != "string") || !data.password.
-                    match(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
+        if (!data.password || (typeof (data.password) != "string")|| !data.password.
+                 match(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
             return res.status(400).send({
                 status: false,
                 msg: "password must be 8 charecter long with a number special charecter and should have both upper and lowercase alphabet"
@@ -97,7 +103,7 @@ const login = async function (req, res) {
         }
         let author = await AuthorModel.findOne({ email: userName, password: password });
         if (!author)
-            return res.status(401).send({
+            return res.status(400).send({
                 status: false,
                 msg: "invalid usename or password",
             })
