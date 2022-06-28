@@ -47,7 +47,7 @@ const authoriseCreate = async function (req, res, next) {
         if (!authorAccessing.match(/^[0-9a-f]{24}$/)) {
             return res.status(400).send({
                 status: false,
-                msg: "Not a valid ObjectId"
+                msg: "Not a valid AuthorId"
             })
         }
         if (authorAccessing != authorLoggedIn) {
@@ -75,7 +75,7 @@ const authoriseByPath = async function (req, res, next) {
         if (!blogId.match(/^[0-9a-f]{24}$/)) {
             return res.status(400).send({
                 status: false,
-                msg: "Not a valid ObjectId"
+                msg: "Not a valid BlogId"
             })
         }
         let authorAccessing = await blogsModel.findById(blogId)
@@ -118,7 +118,7 @@ const authoriseByQuery = async function (req, res, next) {
             if (!conditions.authorId.match(/^[0-9a-f]{24}$/)) {
                 return res.status(400).send({
                     status: false,
-                    msg: "Not a valid ObjectId"
+                    msg: "Not a valid AuthorId"
                 })
             }
 
