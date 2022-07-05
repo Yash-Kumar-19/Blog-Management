@@ -302,7 +302,7 @@ const deleteByQuery = async function (req, res) {
         let count = deleteByQuery.modifiedCount
         res.status(200).send({
             status : true,
-            msg : "No of blogs deleted:", count
+            msg : "No of blogs deleted:"+ count
         })
     }
   
